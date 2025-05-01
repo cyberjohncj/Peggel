@@ -49,5 +49,7 @@ class Peg(pygame.sprite.Sprite):
 
         pass
 
+    """
     def check_screen_collisions(self):
         pass
+    """
