@@ -47,8 +47,8 @@ while app_running:
         elif event.type == pygame.KEYUP:
             pass
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == pygame.BUTTON_LEFT:
-                     ball = Ball(Vector(event.pos[0], event.pos[1]), vector.random_vector() * 150)
+            if not entities.balls and event.button == pygame.BUTTON_LEFT:
+                     ball = Ball(Vector(event.pos[0], 10), vector.random_vector() * 150)
                      entities.add_ball(ball)
 
     update()
