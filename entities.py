@@ -21,8 +21,3 @@ def update_all():
 def draw_all(surface):
     #surface.blit  # if needed
     all_sprites.draw(surface)
-
-def kill_dead_pegs():
-    for peg in pegs:
-        if not peg.alive:
-            peg.kill()

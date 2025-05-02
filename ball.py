@@ -28,13 +28,20 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.position.make_int_tuple())
         self.bounding_box = Rect(0, 0, 1, 1)
         self.alive = True
+
+        self.previous_position = vector.copy(self.position)
+        #self.previous_acc = Vector(0, 0)
+        self.previous_vel = Vector(0, 0)
     
     def update(self):
-        self.velocity.y += commons.dT * commons.gravity
-        next_position = self.position + self.velocity * commons.dT
+        self.previous_position = vector.copy(self.position)
+        self.previous_vel = vector.copy(self.velocity)
 
-        self.check_peg_collisions(next_position)
-        self.position = next_position
+        self.velocity.y += commons.dT * commons.gravity
+        self.position = self.position + self.velocity * commons.dT
+
+        self.velocity.limitMag(500)
+        #self.check_peg_collisions(self.position)
 
         self.check_screen_collisions()
         self.rect.center = self.position.make_int_tuple()
@@ -46,23 +53,21 @@ class Ball(pygame.sprite.Sprite):
             self.velocity.y = -self.velocity.y
         elif self.position.y > commons.screen_h + self.radius:
             self.kill()
-            # Clear all the dead pegs
-            entities.kill_dead_pegs()
 
-    def check_peg_collisions(self, next_position):
+    def check_peg_collisions(self):
+        """
+
         for peg in entities.pegs:
-            offset = next_position - peg.position
-            dist = vector.length(offset)
-            min_dist = self.radius + peg.radius
-
-            if dist < min_dist:
+            if is_ball_touching_peg(self, peg, commons.dT):
                 if peg.alive:
                     peg.alive = False
                     sounds.peghit.play()
 
-                normal = vector.normalize(offset)
+                normal = vector.normalize(peg.position - self.position)
 
-                self.velocity = vector.reflect(self.velocity, normal)
-                self.position = peg.position + normal * min_dist
+                self.velocity = vector.reflect(self.velocity, normal) * .9
+                self.position = peg.position + normal
 
                 break
+                
+        """

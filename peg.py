@@ -2,6 +2,7 @@ import commons
 import vector
 import images
 import pygame
+import entities
 
 from vector import Vector
 from enums import PegType
@@ -40,11 +41,24 @@ class Peg(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.position.make_int_tuple())
         self.bounding_box = Rect(0, 0, 1, 1)
         self.alive = True
+        self.dead_since = None
     
     def update(self):
         #self.velocity.y += commons.dT * commons.gravity
         #self.position += self.velocity * commons.dT
 
+        if not self.alive:
+            if not entities.balls:
+                self.kill()
+                return
+            
+            if not self.dead_since:
+                self.dead_since = pygame.time.get_ticks() 
+            else:
+                elapsed = (pygame.time.get_ticks() - self.dead_since) / 1000
+                if elapsed >= 5:
+                    self.kill()
+                    
         #self.check_screen_collisions()
 
         pass

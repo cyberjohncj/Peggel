@@ -47,6 +47,20 @@ class Vector:
         self.x = vec.x
         self.y = vec.y
 
+    def getMag(self) -> float:
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    def setMag(self, magnitude: float) -> None:
+        current_mag = self.getMag()
+        if current_mag > 0:
+            scale = magnitude / current_mag
+            self.x *= scale
+            self.y *= scale
+
+    def limitMag(self, limit: float) -> None:
+        if self.getMag() > limit:
+            self.setMag(limit)
+
 def dot(vec1, vec2):
     return vec1.x * vec2.x + vec1.y * vec2.y
 
