@@ -8,7 +8,10 @@ mixer.init()
 is_music_playing = False
 
 cannon_shot = mixer.Sound("resources/sounds/cannon_shot.ogg")
-peghit = mixer.Sound("resources/sounds/peghit.ogg")
+
+### Peg Hits
+peghit1 = mixer.Sound("resources/sounds/peghit_low.ogg")
+peghit2 = mixer.Sound("resources/sounds/peghit.ogg")
 
 def play_music(file_name: str, loop: bool = True):
     global is_music_playing

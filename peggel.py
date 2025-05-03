@@ -23,40 +23,101 @@ except ImportError as e:
     print(str(e.msg))
     sys.exit(1)
 
+### Quick Developer Settings
+use_test_grid = False
+
+def rebuild_quad_tree():
+    global quad_tree
+    
+    quad_tree = QuadtreePegs(boundary, len(entities.pegs))
+    for peg in entities.pegs:
+        quad_tree.insert(peg)
+
 def update():
+    global can_clear
+
+    ### Local Variables
+    peg_killed_this_frame = False
+
     entities.update_all()
 
-    if not entities.pegs:
-        ### Test pegs
-        for row in range(0, 3, 1):
-            for col in range(0, 5, 1):
-                entities.add_peg(Peg(Vector(commons.screen_w / 2 + (col * 90), commons.screen_h / 2 + (row * 90))))
-                entities.add_peg(Peg(Vector(commons.screen_w / 2 - (col * 90), commons.screen_h / 2 + (row * 90))))
-    else:
-        if entities.balls:
-            for ball in entities.balls:
-                print(ball.position.x, ball.position.y)
-                """
-                pegs_hit = pygame.sprite.spritecollide(ball, entities.pegs, False)
-                # TODO Implement "Quadtree" Goal: Have a list of pegs that are in the same area of the screen as the ball.
-                if pegs_hit:
-                    for peg in pegs_hit:
-                        if is_ball_touching_peg(ball, peg, commons.dT):
-                            print("Hit")
-                """
+    if not entities.pegs and use_test_grid:
+        for row in range(0, 3):
+            for col in range(1, 5):
+                x_offset = col * 90
+                y = commons.screen_h / 2 + row * 90
 
-                ### Get Pegs
-                query_rect = Rect(ball.position.x, ball.position.y, commons.query_rect_size, commons.query_rect_size)
-                
-                nearby_pegs = quad_tree.query(query_rect)
+                x_right = commons.screen_w / 2 + x_offset
+                entities.add_peg(Peg(Vector(x_right, y)))
 
-                for peg in nearby_pegs:
-                    ball_touching_peg = is_ball_touching_peg(ball, peg, commons.dT)
-                    if ball_touching_peg:
-                        ball = resolve_collision(ball, nearby_pegs, commons.dT)
-                        print(ball)
-                        #print("Touching")
-                        # Touching
+                x_left = commons.screen_w / 2 - x_offset
+                entities.add_peg(Peg(Vector(x_left, y)))
+
+            entities.add_peg(Peg(Vector(commons.screen_w / 2, commons.screen_h / 2 + row * 90)))
+        
+        print("[Console]: Ran rebuild_quad_tree()")
+        rebuild_quad_tree()
+
+    ### Balls
+    if entities.balls:
+        # Since there is a ball, the screen can be cleared.
+        can_clear = True
+
+        ### Ball Loop
+        for ball in entities.balls:
+            #print(ball.position.x, ball.position.y)
+            """
+            pegs_hit = pygame.sprite.spritecollide(ball, entities.pegs, False)
+            # TODO Implement "Quadtree" Goal: Have a list of pegs that are in the same area of the screen as the ball.
+            if pegs_hit:
+                for peg in pegs_hit:
+                    if is_ball_touching_peg(ball, peg, commons.dT):
+                        print("Hit")
+            """
+
+            ### Get Pegs
+            query_rect = Rect(ball.position.x, ball.position.y, commons.query_rect_size, commons.query_rect_size)
+            
+            nearby_pegs = quad_tree.query(query_rect)
+
+            for peg in nearby_pegs:
+                ball_touching_peg = is_ball_touching_peg(ball, peg, commons.dT)
+                if ball_touching_peg:
+                    ball = resolve_collision(ball, nearby_pegs, commons.dT)
+
+                    if peg.alive:
+                        peg.alive = False
+                        peg.hit_at = pygame.time.get_ticks()
+
+                        ### Play a Sound
+                        sounds.peghit1.play()
+
+    elif can_clear: # There are no balls, so if can_clear is true, we will just clear the screen now.
+        can_clear = False
+
+        print("[Console]: Cleaning up Pegs")
+
+        for peg in entities.pegs:
+            if not peg.alive:
+                peg.kill()
+                peg_killed_this_frame = True
+
+        #rebuild_quad_tree()
+
+    ### Pegs
+    if entities.pegs:
+        for peg in entities.pegs:
+            if peg.hit_at and not peg.alive:
+                ### If a Peg has been dead for 5 seconds without being killed, it will just automatically be killed.
+                if ((pygame.time.get_ticks() - peg.hit_at) / 1000 >= 5):
+                    peg.kill()
+                    peg_killed_this_frame = True
+
+        ### Since there are still pegs, and a peg was killed in this frame/update, we will rebuild the quad tree.
+        if peg_killed_this_frame:
+            print("[Console]: Ran rebuild_quad_tree()")
+            rebuild_quad_tree()
+      
 
 def draw():
     commons.screen.fill((50, 50, 50))
@@ -68,6 +129,10 @@ pygame.init()
 commons.screen = pygame.display.set_mode((commons.screen_w, commons.screen_h))
 
 pygame.display.set_caption("Peggel")
+
+### Game Variables
+done = False
+can_clear = False
 
 app_running = True
 commons.dT = 0.0
@@ -105,6 +170,14 @@ while app_running:
                      ball = Ball(Vector(event.pos[0], 10))
                      entities.add_ball(ball)
                      sounds.cannon_shot.play()
+            elif event.button == pygame.BUTTON_MIDDLE:
+                ### Adding a Peg
+                peg = Peg(Vector(event.pos[0], event.pos[1]))
+                entities.add_peg(peg)
+
+                print("[Console]: Spawned a Peg")
+                print("[Console] Ran rebuild_quad_tree()")
+                rebuild_quad_tree()
     
     if not sounds.is_music_playing:
         sounds.play_music("bgm2.mp3", True)

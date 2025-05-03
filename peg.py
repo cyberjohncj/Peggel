@@ -32,36 +32,32 @@ class Peg(pygame.sprite.Sprite):
         else:
             self.peg_type = PegType.BLUE  # Default
         
-        if image is None:
-            image = images.default_ball
-        tint_color = PEG_COLORS[self.peg_type]
-        self.image = image.copy()
-        self.image.fill(tint_color + (0,), special_flags=pygame.BLEND_RGBA_ADD)
+        # Set base image (untinted)
+        self.base_image = image if image is not None else images.default_ball
+        self.image = self.base_image.copy()
+        self.update_tint()
 
         self.rect = self.image.get_rect(center=self.position.make_int_tuple())
         self.bounding_box = Rect(0, 0, 1, 1)
         self.alive = True
-        self.dead_since = None
+        self.hit_at = None
+        self.peg_glowing = False
     
     def update(self):
         #self.velocity.y += commons.dT * commons.gravity
         #self.position += self.velocity * commons.dT
 
-        if not self.alive:
-            if not entities.balls:
-                self.kill()
-                return
-            
-            if not self.dead_since:
-                self.dead_since = pygame.time.get_ticks() 
-            else:
-                elapsed = (pygame.time.get_ticks() - self.dead_since) / 1000
-                if elapsed >= 5:
-                    self.kill()
-                    
-        #self.check_screen_collisions()
+        if not self.alive and not self.peg_glowing:
+            # Glow
+            self.base_image = images.glowing_ball.copy()
+            self.update_tint()
+            self.rect = self.image.get_rect(center=self.position.make_int_tuple())
+            self.image_swapped = True
 
-        pass
+    def update_tint(self):
+        self.image = self.base_image.copy()
+        tint_color = PEG_COLORS[self.peg_type]
+        self.image.fill(tint_color + (0,), special_flags=pygame.BLEND_RGBA_ADD)
 
     """
     def check_screen_collisions(self):
