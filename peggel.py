@@ -35,6 +35,7 @@ def update():
     else:
         if entities.balls:
             for ball in entities.balls:
+                print(ball.position.x, ball.position.y)
                 """
                 pegs_hit = pygame.sprite.spritecollide(ball, entities.pegs, False)
                 # TODO Implement "Quadtree" Goal: Have a list of pegs that are in the same area of the screen as the ball.

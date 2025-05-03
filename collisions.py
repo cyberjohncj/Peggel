@@ -92,6 +92,13 @@ def resolve_collision(ball: Ball, pegs: list[Peg], dt: float) -> Ball:
     delta = vector.copy(ball.position) - ball.previous_position
     collision_position += delta * best_fraction
 
+    # Ensure best_normal points from peg to ball and is normalized
+    best_normal = vector.copy(ball.position - best_peg.position)
+    if vector.length(best_normal) != 0:
+        best_normal = vector.normalize(best_normal)
+    else:
+        best_normal = Vector(0, -1)  # Default to upward if same position
+
     # Reposition ball to avoid overlap
     final_normal = vector.copy(best_normal) * (ball.radius + best_peg.radius)
     final_position = vector.copy(best_peg.position) + final_normal
