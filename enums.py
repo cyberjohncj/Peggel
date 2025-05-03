@@ -1,3 +1,4 @@
+### LOCAL
 from enum import Enum
 
 class BallType(Enum):

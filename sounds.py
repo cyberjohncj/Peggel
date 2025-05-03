@@ -1,3 +1,4 @@
+### THIRD-PARTY LIBRARIES
 import pygame
 
 from pygame import mixer

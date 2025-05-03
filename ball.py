@@ -1,9 +1,10 @@
+### THIRD-PARTY LIBRARIES
+import pygame
+
+### LOCAL
 import commons
 import vector
 import images
-import pygame
-import entities
-import sounds
 
 from vector import Vector
 from enums import BallType

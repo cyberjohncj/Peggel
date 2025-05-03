@@ -1,8 +1,9 @@
-import commons
+### THIRD-PARTY LIBRARIES
+import pygame
+
+### LOCAL
 import vector
 import images
-import pygame
-import entities
 
 from vector import Vector
 from enums import PegType
@@ -11,7 +12,7 @@ from pygame.locals import *
 PEG_COLORS = {
     PegType.BLUE: (0, 0, 150),
     PegType.ORANGE: (60, 0, 0),
-    PegType.GREEN: (0, 255, 0),
+    PegType.GREEN: (0, 60, 0),
     PegType.PURPLE: (128, 0, 128),
 }
 
@@ -32,6 +33,8 @@ class Peg(pygame.sprite.Sprite):
         else:
             self.peg_type = PegType.BLUE  # Default
         
+        self.current_peg_type = self.peg_type
+        
         # Set base image (untinted)
         self.base_image = image if image is not None else images.default_ball
         self.image = self.base_image.copy()
@@ -44,6 +47,12 @@ class Peg(pygame.sprite.Sprite):
         self.peg_glowing = False
     
     def update(self):
+        if self.peg_type != self.current_peg_type:
+            self.current_peg_type = self.peg_type
+
+            print("[Console]: Changed color of Peg")
+            self.update_tint()
+
         #self.velocity.y += commons.dT * commons.gravity
         #self.position += self.velocity * commons.dT
 

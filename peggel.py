@@ -1,30 +1,29 @@
+### STANDARD LIBRARIES
 import sys
 
-### Local Imports
-try:
-    import commons
-    import pygame
-    import vector
-    import states
-    import entities
-    import images
-    import sounds
+### THIRD-PARTY LIBRARIES
+import pygame
 
-    from vector import Vector
-    from states import GameState, MenuState, PlayState
-    from enums import BallType, PegType
-    from collisions import is_ball_touching_peg, resolve_collision
-    from quadtree import QuadtreePegs, Rect
+### LOCAL
+import commons
+import config
+import vector
+import states
+import entities
+import images
+import sounds
 
-    from ball import Ball
-    from peg import Peg
-except ImportError as e:
-    print("[ERROR]: Unable to import local modules.")
-    print(str(e.msg))
-    sys.exit(1)
+from vector import Vector
+from states import GameState, MenuState, PlayState
+from enums import BallType, PegType
+from collisions import is_ball_touching_peg, resolve_collision
+from quadtree import QuadtreePegs, Rect
+from etc import add_peg, change_peg_colors
+from ball import Ball
+from peg import Peg
 
-### Quick Developer Settings
-use_test_grid = False
+### SETTINGS
+use_test_grid = True
 
 def rebuild_quad_tree():
     global quad_tree
@@ -42,23 +41,26 @@ def update():
     entities.update_all()
 
     if not entities.pegs and use_test_grid:
-        for row in range(0, 3):
-            for col in range(1, 5):
-                x_offset = col * 90
-                y = commons.screen_h / 2 + row * 90
+        commons.total_pegs = 0
+
+        for row in range(0, 5):
+            for col in range(1, 7):
+                x_offset = col * 60
+                y = commons.screen_h / 2 + row * 60
 
                 x_right = commons.screen_w / 2 + x_offset
-                entities.add_peg(Peg(Vector(x_right, y)))
+                add_peg(Vector(x_right, y))
 
                 x_left = commons.screen_w / 2 - x_offset
-                entities.add_peg(Peg(Vector(x_left, y)))
+                add_peg(Vector(x_left, y))
 
-            entities.add_peg(Peg(Vector(commons.screen_w / 2, commons.screen_h / 2 + row * 90)))
+            add_peg(Vector(commons.screen_w / 2, commons.screen_h / 2 + row * 60))
         
+        change_peg_colors()
+
         print("[Console]: Ran rebuild_quad_tree()")
         rebuild_quad_tree()
 
-    ### Balls
     if entities.balls:
         # Since there is a ball, the screen can be cleared.
         can_clear = True
@@ -101,10 +103,10 @@ def update():
             if not peg.alive:
                 peg.kill()
                 peg_killed_this_frame = True
+                commons.total_pegs -= 1
 
         #rebuild_quad_tree()
 
-    ### Pegs
     if entities.pegs:
         for peg in entities.pegs:
             if peg.hit_at and not peg.alive:
@@ -112,6 +114,7 @@ def update():
                 if ((pygame.time.get_ticks() - peg.hit_at) / 1000 >= 5):
                     peg.kill()
                     peg_killed_this_frame = True
+                    commons.total_pegs -= 1
 
         ### Since there are still pegs, and a peg was killed in this frame/update, we will rebuild the quad tree.
         if peg_killed_this_frame:
@@ -172,8 +175,7 @@ while app_running:
                      sounds.cannon_shot.play()
             elif event.button == pygame.BUTTON_MIDDLE:
                 ### Adding a Peg
-                peg = Peg(Vector(event.pos[0], event.pos[1]))
-                entities.add_peg(peg)
+                add_peg(Vector(event.pos[0], event.pos[1]))
 
                 print("[Console]: Spawned a Peg")
                 print("[Console] Ran rebuild_quad_tree()")

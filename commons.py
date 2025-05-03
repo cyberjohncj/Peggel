@@ -1,6 +1,12 @@
 screen_w = 960
 screen_h = 720
 
+total_pegs = 0
+
+orange_pegs = 0
+green_pegs = 0
+purple_pegs = 0
+
 dT = 0.0
 gravity = 650
 
