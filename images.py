@@ -1,6 +1,6 @@
 import pygame
 
-test_background = pygame.image.load("resources/images/backgrounds/960x720/test.png")
+test_background = pygame.image.load("resources/images/backgrounds/960x720/city.png")
 
 # Ball class images
 default_ball = pygame.image.load("resources/images/balls/main.png")

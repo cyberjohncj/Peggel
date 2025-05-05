@@ -48,7 +48,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect.center = self.position.make_int_tuple()
 
     def check_screen_collisions(self):
-        if self.position.x < self.radius or self.position.x > commons.screen_w - self.radius:
+        if self.position.x < self.radius or self.position.x > commons.game_screen_w - self.radius:
             self.velocity.x = -self.velocity.x
         if self.position.y < self.radius:
             self.velocity.y = -self.velocity.y

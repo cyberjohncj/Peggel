@@ -23,7 +23,7 @@ from ball import Ball
 from peg import Peg
 
 ### SETTINGS
-use_test_grid = True
+use_test_grid = False
 
 def rebuild_quad_tree():
     global quad_tree
@@ -45,16 +45,16 @@ def update():
 
         for row in range(0, 5):
             for col in range(1, 7):
-                x_offset = col * 60
-                y = commons.screen_h / 2 + row * 60
+                x_offset = col * 50
+                y = commons.screen_h / 2 + row * 50
 
-                x_right = commons.screen_w / 2 + x_offset
+                x_right = commons.game_screen_w / 2 + x_offset
                 add_peg(Vector(x_right, y))
 
-                x_left = commons.screen_w / 2 - x_offset
+                x_left = commons.game_screen_w / 2 - x_offset
                 add_peg(Vector(x_left, y))
 
-            add_peg(Vector(commons.screen_w / 2, commons.screen_h / 2 + row * 60))
+            add_peg(Vector(commons.game_screen_w / 2, commons.screen_h / 2 + row * 50))
         
         change_peg_colors()
 
@@ -123,13 +123,20 @@ def update():
       
 
 def draw():
-    commons.screen.fill((50, 50, 50))
-    commons.screen.blit(images.test_background, (0, 0))
-    entities.draw_all(commons.screen)
+    commons.screen.fill((25, 25, 25))
+    commons.game_screen.fill((255, 255, 255))
+
+    commons.game_screen.blit(images.test_background, (0, 0))
+
+    entities.draw_all(commons.game_screen)
+
+    # Center game screen on the main display
+    commons.screen.blit(commons.game_screen, (commons.game_x, 0))
 
 pygame.init()
 
 commons.screen = pygame.display.set_mode((commons.screen_w, commons.screen_h))
+commons.game_screen = pygame.Surface((commons.game_screen_w, commons.screen_h))
 
 pygame.display.set_caption("Peggel")
 
@@ -146,7 +153,7 @@ mouse_position = (0, 0)
 #entities.add_peg(Peg(Vector(commons.screen_w / 2 + 50, commons.screen_h / 2), peg_type=PegType.ORANGE))
 
 ### Quadtree implementation
-boundary = Rect(commons.screen_w / 2, commons.screen_h / 2, commons.screen_w / 2, commons.screen_h / 2)
+boundary = Rect(commons.game_screen_w / 2, commons.screen_h / 2, commons.game_screen_w / 2, commons.screen_h / 2)
 quad_tree = QuadtreePegs(boundary, 4)
 query_rect = Rect(0, 0, 0, 0)
 nearby_pegs = []
@@ -169,18 +176,34 @@ while app_running:
         elif event.type == pygame.KEYUP:
             pass
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if not entities.balls and event.button == pygame.BUTTON_LEFT:
-                     ball = Ball(Vector(event.pos[0], 10))
-                     entities.add_ball(ball)
-                     sounds.cannon_shot.play()
-            elif event.button == pygame.BUTTON_MIDDLE:
-                ### Adding a Peg
-                add_peg(Vector(event.pos[0], event.pos[1]))
+            mouse_x_in_game = event.pos[0] - commons.game_x
 
-                print("[Console]: Spawned a Peg")
-                print("[Console] Ran rebuild_quad_tree()")
-                rebuild_quad_tree()
-    
+            if 0 <= mouse_x_in_game < commons.game_screen_w:
+                if not entities.balls and event.button == pygame.BUTTON_LEFT:
+                            ball = Ball(Vector(mouse_x_in_game, 10))
+                            entities.add_ball(ball)
+                            sounds.cannon_shot.play()
+                """
+                elif event.button == pygame.BUTTON_RIGHT:
+                    ### Adding a Peg
+                    add_peg(Vector(mouse_x_in_game, event.pos[1]))
+
+                    print("[Console]: Spawned a Peg")
+                    print("[Console] Ran rebuild_quad_tree()")
+                    rebuild_quad_tree()
+                """
+        elif pygame.mouse.get_pressed()[2]:
+            mouse_x_in_game = mouse_position[0] - commons.game_x
+            
+            if 0 <= mouse_x_in_game < commons.game_screen_w:
+                mouse_peg = Peg(Vector(mouse_x_in_game, event.pos[1]))
+                if not pygame.sprite.spritecollide(mouse_peg, entities.pegs, False):
+                    add_peg(Vector(mouse_x_in_game, event.pos[1]))
+
+                    print("[Console]: Spawned a Peg")
+                    print("[Console] Ran rebuild_quad_tree()")
+                    rebuild_quad_tree()
+                    
     if not sounds.is_music_playing:
         sounds.play_music("bgm2.mp3", True)
 
