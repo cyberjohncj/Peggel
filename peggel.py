@@ -23,7 +23,7 @@ from ball import Ball
 from peg import Peg
 
 ### SETTINGS
-use_test_grid = False
+use_test_grid = True
 
 def rebuild_quad_tree():
     global quad_tree
@@ -43,8 +43,8 @@ def update():
     if not entities.pegs and use_test_grid:
         commons.total_pegs = 0
 
-        for row in range(0, 5):
-            for col in range(1, 7):
+        for row in range(0, 6):
+            for col in range(1, 5):
                 x_offset = col * 50
                 y = commons.screen_h / 2 + row * 50
 
@@ -126,7 +126,7 @@ def draw():
     commons.screen.fill((25, 25, 25))
     commons.game_screen.fill((255, 255, 255))
 
-    commons.game_screen.blit(images.test_background, (0, 0))
+    commons.game_screen.blit(background, (0, 0))
 
     entities.draw_all(commons.game_screen)
 
@@ -143,6 +143,8 @@ pygame.display.set_caption("Peggel")
 ### Game Variables
 done = False
 can_clear = False
+background = (images.get_random_background() or images.test_background)
+track_stopped = False
 
 app_running = True
 commons.dT = 0.0
@@ -204,8 +206,11 @@ while app_running:
                     print("[Console] Ran rebuild_quad_tree()")
                     rebuild_quad_tree()
                     
-    if not sounds.is_music_playing:
-        sounds.play_music("bgm2.mp3", True)
+    if not sounds.track_is_playing and not track_stopped:
+        played_track = sounds.play_random_track()
+        if not played_track:
+            print("[Console]: Failed to get a random track.")
+            track_stopped = True
 
     update()
     draw()

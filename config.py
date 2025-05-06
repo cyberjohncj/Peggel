@@ -1,4 +1,4 @@
-max_total_pegs = 500
+max_total_pegs = 60
 
 max_orange_pegs = 25
 max_green_pegs = 2
