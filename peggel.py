@@ -40,6 +40,8 @@ def update():
 
     entities.update_all()
 
+    """
+    # There was a better opportunity to do this later
     if not entities.pegs and use_test_grid:
         commons.total_pegs = 0
 
@@ -60,6 +62,7 @@ def update():
 
         print("[Console]: Ran rebuild_quad_tree()")
         rebuild_quad_tree()
+    """
 
     if entities.balls:
         # Since there is a ball, the screen can be cleared.
@@ -94,7 +97,7 @@ def update():
                         ### Play a Sound
                         sounds.peghit1.play()
 
-    elif can_clear: # There are no balls, so if can_clear is true, we will just clear the screen now.
+    elif can_clear: ### There are no balls, so if can_clear is true, we will just clear the screen now.
         can_clear = False
 
         print("[Console]: Cleaning up Pegs")
@@ -120,8 +123,27 @@ def update():
         if peg_killed_this_frame:
             print("[Console]: Ran rebuild_quad_tree()")
             rebuild_quad_tree()
-      
+    elif use_test_grid: ### There are no pegs alive, and the game has been configured to automatically spawn a test grid.
+        commons.total_pegs = 0
 
+        for row in range(0, 6):
+            for col in range(1, 5):
+                x_offset = col * 50
+                y = commons.screen_h / 2 + row * 50
+
+                x_right = commons.game_screen_w / 2 + x_offset
+                add_peg(Vector(x_right, y))
+
+                x_left = commons.game_screen_w / 2 - x_offset
+                add_peg(Vector(x_left, y))
+
+            add_peg(Vector(commons.game_screen_w / 2, commons.screen_h / 2 + row * 50))
+        
+        change_peg_colors()
+
+        print("[Console]: Ran rebuild_quad_tree()")
+        rebuild_quad_tree()
+      
 def draw():
     commons.screen.fill((25, 25, 25))
     commons.game_screen.fill((255, 255, 255))
@@ -182,9 +204,12 @@ while app_running:
 
             if 0 <= mouse_x_in_game < commons.game_screen_w:
                 if not entities.balls and event.button == pygame.BUTTON_LEFT:
-                            ball = Ball(Vector(mouse_x_in_game, 10))
-                            entities.add_ball(ball)
-                            sounds.cannon_shot.play()
+                    ball_direction = Vector(mouse_x_in_game, event.pos[1]) - Vector(commons.x_centered, 10) * 1.2
+
+                    ball = Ball(Vector(commons.x_centered, 10), ball_direction)
+                    entities.add_ball(ball)
+                    sounds.cannon_shot.play()
+                    
                 """
                 elif event.button == pygame.BUTTON_RIGHT:
                     ### Adding a Peg
@@ -194,7 +219,7 @@ while app_running:
                     print("[Console] Ran rebuild_quad_tree()")
                     rebuild_quad_tree()
                 """
-        elif pygame.mouse.get_pressed()[2]:
+        elif pygame.mouse.get_pressed()[2]: ### This checks whether the second mouse button is being held down.
             mouse_x_in_game = mouse_position[0] - commons.game_x
             
             if 0 <= mouse_x_in_game < commons.game_screen_w:
@@ -210,7 +235,7 @@ while app_running:
         played_track = sounds.play_random_track()
         if not played_track:
             print("[Console]: Failed to get a random track.")
-            track_stopped = True
+            track_stopped = True ### Disable track
 
     update()
     draw()

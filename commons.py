@@ -4,6 +4,7 @@ screen_h = 720
 game_screen_w = screen_w // 1.5
 # game height = screen height
 
+x_centered = game_screen_w // 2
 game_x = (screen_w - game_screen_w) // 2 # Centered
 
 total_pegs = 0
@@ -13,7 +14,7 @@ green_pegs = 0
 purple_pegs = 0
 
 dT = 0.0
-gravity = 650 # 650
+gravity = 400 # 650
 
 collision_sample_size = 10
 
