@@ -14,7 +14,7 @@ green_pegs = 0
 purple_pegs = 0
 
 dT = 0.0
-gravity = 400 # 650
+gravity = 650 # 650
 
 collision_sample_size = 10
 

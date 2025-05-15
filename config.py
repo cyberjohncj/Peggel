@@ -1,3 +1,5 @@
+use_test_grid = True
+
 max_total_pegs = 60
 
 max_orange_pegs = 25

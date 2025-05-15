@@ -5,15 +5,20 @@ import pygame
 import commons
 import vector
 import images
+import entities
+import sounds
 
 from vector import Vector
 from enums import BallType
+from states import BallState
 from pygame.locals import *
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, position, velocity=Vector(0, 0), radius=8, 
                  ball_type=BallType.DEFAULT, image: pygame.Surface = None):
         super().__init__()
+
+        self.state = BallState.SHOT
         
         self.position = vector.copy(position)
         self.velocity = vector.copy(velocity)
@@ -38,10 +43,11 @@ class Ball(pygame.sprite.Sprite):
         self.previous_position = vector.copy(self.position)
         self.previous_vel = vector.copy(self.velocity)
 
-        self.velocity.y += commons.dT * commons.gravity
+        if self.state == BallState.ACTIVE:
+            self.velocity.y += commons.dT * commons.gravity
         self.position = self.position + self.velocity * commons.dT
 
-        self.velocity.limitMag(500)
+        self.velocity.limitMag(600)
         #self.check_peg_collisions(self.position)
 
         self.check_screen_collisions()
@@ -54,21 +60,3 @@ class Ball(pygame.sprite.Sprite):
             self.velocity.y = -self.velocity.y
         elif self.position.y > commons.screen_h + self.radius:
             self.kill()
-
-    def check_peg_collisions(self):
-        """
-
-        for peg in entities.pegs:
-            if is_ball_touching_peg(self, peg, commons.dT):
-                if peg.alive:
-                    peg.alive = False
-                    sounds.peghit.play()
-
-                normal = vector.normalize(peg.position - self.position)
-
-                self.velocity = vector.reflect(self.velocity, normal) * .9
-                self.position = peg.position + normal
-
-                break
-                
-        """

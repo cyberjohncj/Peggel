@@ -1,5 +1,6 @@
 from enum import Enum
 
+### Game States
 class GameState(Enum):
     MENU = 0
     PLAYING = 1
@@ -19,6 +20,18 @@ class PlayState(Enum):
     BALL_DROPPING = 2
     ADJUSTING_SCORE = 3
     GAME_OVER = 4
+
+### Object States
+class BallState(Enum):
+    SHOT = 0
+    ACTIVE = 1
+
+class PegState(Enum):
+    WAITING_TO_SPAWN = 0
+    SPAWNING = 1
+    ACTIVE = 2
+    DESPAWNING = 3
+    REMOVED = 4
 
 game_state = GameState.MENU
 menu_state = MenuState.MAIN
