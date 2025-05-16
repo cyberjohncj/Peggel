@@ -1,8 +1,6 @@
-### STANDARD LIBRARIES
 import os
 from random import choice
 
-### THIRD-PARTY LIBRARIES
 import pygame
 
 backgrounds = []

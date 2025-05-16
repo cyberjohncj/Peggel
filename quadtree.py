@@ -1,9 +1,8 @@
 import pygame
+
 from peg import Peg
 
-class Rect:
-    """Axis-aligned rectangle, used for spatial partitioning."""
-    
+class Rect:    
     def __init__(self, x, y, w, h):
         self.x = x  # Center x-coordinate
         self.y = y  # Center y-coordinate
@@ -11,20 +10,16 @@ class Rect:
         self.h = h  # Half-height
 
     def contains_peg(self, peg: Peg) -> bool:
-        """Check if this rectangle contains a given Peg."""
         return (self.x - self.w <= peg.position.x < self.x + self.w and
                 self.y - self.h <= peg.position.y < self.y + self.h)
 
     def intersects(self, other: 'Rect') -> bool:
-        """Check if this rectangle intersects another."""
         return not (other.x - other.w > self.x + self.w or
                     other.x + other.w < self.x - self.w or
                     other.y - other.h > self.y + self.h or
                     other.y + other.h < self.y - self.h)
 
-class QuadtreePegs:
-    """Quadtree implementation to manage and query Peg objects efficiently."""
-    
+class QuadtreePegs:    
     def __init__(self, boundary: Rect, num_pegs: int):
         self.boundary = boundary  # Bounding rectangle of this node
         self.capacity = max(num_pegs // 4, 4)  # Minimum capacity of 4
@@ -32,7 +27,6 @@ class QuadtreePegs:
         self.divided = False  # Whether this node has been subdivided
 
     def subdivide(self):
-        """Divide the current node into four child nodes."""
         x, y = self.boundary.x, self.boundary.y
         w, h = self.boundary.w / 2, self.boundary.h / 2
 
@@ -50,7 +44,6 @@ class QuadtreePegs:
         self.divided = True
 
     def insert(self, peg: Peg) -> bool:
-        """Insert a Peg into this Quadtree node or its children."""
         if not self.boundary.contains_peg(peg):
             return False  # Peg is out of bounds
 
@@ -68,7 +61,6 @@ class QuadtreePegs:
                     self.southwest.insert(peg))
 
     def show(self, surface):
-        """Draw the boundary of this Quadtree node and its children."""
         rect = pygame.Rect(
             self.boundary.x - self.boundary.w,
             self.boundary.y - self.boundary.h,
@@ -85,7 +77,6 @@ class QuadtreePegs:
             self.southwest.show(surface)
 
     def query(self, range: Rect) -> list[Peg]:
-        """Retrieve all Pegs within a given rectangular range."""
         found = []
 
         if not self.boundary.intersects(range):

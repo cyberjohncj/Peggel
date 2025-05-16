@@ -1,7 +1,5 @@
-### THIRD-PARTY LIBRARIES
 import pygame
 
-### LOCAL
 import commons
 import config # TODO
 import vector
@@ -51,7 +49,7 @@ class Game:
                 pass
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_1 = event.pos
-            elif pygame.mouse.get_pressed()[2]: ### This checks whether the second mouse button is being held down.
+            elif pygame.mouse.get_pressed()[2]: # This checks whether the second mouse button is being held down.
                 self.mouse_2 = event.pos
                 """
                 if states.game_state == states.GameState.LEVEL_EDITING:
@@ -69,13 +67,13 @@ class Game:
 
     def update(self):
         if states.game_state == GameState.PLAYING:
-            ### Local Variables
+            # Local Variables
             peg_killed_this_frame = False
 
             if not self.background:
                 self.background = (images.get_random_background() or images.test_background)
 
-            if self.mouse_1: ### Check if the mouse was pressed for this frame.
+            if self.mouse_1: # Check if the mouse was pressed for this frame.
                 mouse_x_in_game = self.mouse_1[0] - commons.game_x
                 if 0 <= mouse_x_in_game < commons.game_screen_w:
                     if not entities.balls:
@@ -90,14 +88,14 @@ class Game:
                 self.mouse_2 = None
                 pass
 
-            ### Handle Updates
+            # Handle Updates
             entities.update_all()
 
             if entities.balls:
                 # Since there is a ball, the screen can be cleared.
                 self.can_clear = True
 
-                ### Ball Loop
+                # Ball Loop
                 for ball in entities.balls:
                     #print(ball.position.x, ball.position.y)
                     """
@@ -109,7 +107,7 @@ class Game:
                                 print("Hit")
                     """
 
-                    ### Get Pegs
+                    # Get Pegs
                     query_rect = Rect(ball.position.x, ball.position.y, commons.query_rect_size, commons.query_rect_size)
                     
                     nearby_pegs = self.quad_tree.query(query_rect)
@@ -127,7 +125,7 @@ class Game:
                                 ### Play a Sound
                                 sounds.peghit1.play()
 
-            elif self.can_clear: ### There are no balls, so if can_clear is true, we will just clear the screen now.
+            elif self.can_clear: # There are no balls, so if can_clear is true, we will just clear the screen now.
                 self.can_clear = False
 
                 print("[Console]: Cleaning up Pegs")
@@ -143,17 +141,17 @@ class Game:
             if entities.pegs:
                 for peg in entities.pegs:
                     if peg.hit_at and not peg.alive:
-                        ### If a Peg has been dead for 5 seconds without being killed, it will just automatically be killed.
+                        # If a Peg has been dead for 5 seconds without being killed, it will just automatically be killed.
                         if ((pygame.time.get_ticks() - peg.hit_at) / 1000 >= 5):
                             peg.kill()
                             peg_killed_this_frame = True
                             commons.total_pegs -= 1
 
-                ### Since there are still pegs, and a peg was killed in this frame/update, we will rebuild the quad tree.
+                # Since there are still pegs, and a peg was killed in this frame/update, we will rebuild the quad tree.
                 if peg_killed_this_frame:
                     print("[Console]: Ran rebuild_quad_tree()")
                     self.rebuild_quad_tree()
-            elif config.use_test_grid: ### There are no pegs alive, and the game has been configured to automatically spawn a test grid.
+            elif config.use_test_grid: # There are no pegs alive, and the game has been configured to automatically spawn a test grid.
                 commons.total_pegs = 0
 
                 for row in range(0, 6):
@@ -178,7 +176,7 @@ class Game:
                 played_track = sounds.play_random_track()
                 if not played_track:
                     print("[Console]: Failed to get a random track.")
-                    self.track_stopped = True ### Disable track
+                    self.track_stopped = True # Disable track
 
     def draw(self):
         commons.screen.fill((25, 25, 25))

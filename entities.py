@@ -1,7 +1,5 @@
-### THIRD-PARTY LIBRARIES
 import pygame
 
-### LOCAL
 from ball import Ball
 from peg import Peg
 

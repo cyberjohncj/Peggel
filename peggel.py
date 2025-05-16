@@ -1,19 +1,13 @@
-### STANDARD LIBRARIES
 import sys
 
-### THIRD-PARTY LIBRARIES
 import pygame
 
-### LOCAL
 import commons
 import config
 import states
 
 from states import GameState, MenuState, PlayState, BallState, PegState
 from engine import Game
-
-### SETTINGS
-use_test_grid = True
 
 def update():
     if states.game_state == GameState.PLAYING:
@@ -30,7 +24,7 @@ commons.game_screen = pygame.Surface((commons.game_screen_w, commons.screen_h))
 
 pygame.display.set_caption("Peggel")
 
-### Game Variables
+# Game Variables
 can_clear = False
 commons.game = Game()
 
@@ -40,7 +34,7 @@ mouse_position = (0, 0)
 
 states.game_state = GameState.PLAYING
 
-### Main Loop ###
+# Main Loop
 while commons.game.game_running:
     mouse_position = pygame.mouse.get_pos()
 

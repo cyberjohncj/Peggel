@@ -1,7 +1,5 @@
-### THIRD-PARTY LIBRARIES
 import pygame
 
-### LOCAL
 import vector
 import images
 
@@ -67,8 +65,3 @@ class Peg(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
         tint_color = PEG_COLORS[self.peg_type]
         self.image.fill(tint_color + (0,), special_flags=pygame.BLEND_RGBA_ADD)
-
-    """
-    def check_screen_collisions(self):
-        pass
-    """

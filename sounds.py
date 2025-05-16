@@ -1,9 +1,7 @@
-### STANDARD LIBRARIES
 import os
 
 from random import choice
 
-### THIRD-PARTY LIBRARIES
 import pygame
 
 from pygame import mixer
@@ -21,7 +19,6 @@ track_is_playing = False
 
 cannon_shot = mixer.Sound("resources/sounds/cannon_shot.ogg")
 
-### Peg Hits
 peghit1 = mixer.Sound("resources/sounds/peghit_low.ogg")
 peghit2 = mixer.Sound("resources/sounds/peghit.ogg")
 

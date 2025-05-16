@@ -1,6 +1,6 @@
 from enum import Enum
 
-### Game States
+# Game States
 class GameState(Enum):
     MENU = 0
     PLAYING = 1
@@ -21,7 +21,7 @@ class PlayState(Enum):
     ADJUSTING_SCORE = 3
     GAME_OVER = 4
 
-### Object States
+# Object States
 class BallState(Enum):
     SHOT = 0
     ACTIVE = 1

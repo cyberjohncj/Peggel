@@ -1,7 +1,5 @@
-### THIRD-PARTY LIBRARIES
 import pygame
 
-### LOCAL
 import commons
 import vector
 import images

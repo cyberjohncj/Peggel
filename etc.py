@@ -1,7 +1,5 @@
-### STANDARD LIBRARIES
 from random import shuffle
 
-### LOCAL
 import commons
 import config
 import entities
@@ -17,8 +15,6 @@ def add_peg(position: Vector):
     entities.add_peg(Peg(position, peg_type=PegType.BLUE))
     commons.total_pegs += 1
 
-    #change_peg_colors()
-
 def change_peg_colors(color_map: list = None):
     peg_list = list(entities.pegs.sprites())
 
@@ -29,7 +25,7 @@ def change_peg_colors(color_map: list = None):
         target_greens = config.max_green_pegs
 
         if len(entities.pegs) < config.max_orange_pegs:
-            print(f"[Console Warning]: Level has less than {str(config.max_orange_pegs)} pegs.")
+            print(f"[Console]: Level has less than {str(config.max_orange_pegs)} pegs.")
 
             target_oranges = 1 if len(entities.pegs) <= 3 else len(entities.pegs) - 2
 
